@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -63,10 +64,32 @@ public class GreetingsController {
 	
 	@DeleteMapping(value = "delete")
 	@ResponseBody /*Descricao da resposta*/
-	public ResponseEntity<String> delete(@RequestParam Long iduser) {/*Recebe os dados para salvar*/
+	public ResponseEntity<String> delete(@RequestParam Long iduser) {/*Recebe os dados para deletar*/
 		
 		usuarioRepository.deleteById(iduser);
 		
 		return new ResponseEntity<String>("User deletado com sucesso", HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "buscaruserid")
+	@ResponseBody /*Descricao da resposta*/
+	public ResponseEntity<Usuario> buscaruserid(@RequestParam(name = "iduser") Long iduser) {/*Recebe os dados para consultar*/
+		
+		Usuario usuario = usuarioRepository.findById(iduser).get();
+		
+		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
+	}
+	
+	@PutMapping(value = "atualizar") /*mapeia a url*/
+	@ResponseBody /*Descricao da resposta*/
+	public ResponseEntity<?> atualizar(@RequestBody Usuario usuario) {/*Recebe os dados para salvar*/
+		
+		if (usuario.getId() == null) {
+			return new ResponseEntity<String>("Id não foi informado para atualização", HttpStatus.OK);
+		}
+		
+		Usuario user = usuarioRepository.saveAndFlush(usuario);
+		
+		return new ResponseEntity<Usuario>(user, HttpStatus.OK);
 	}
 }
